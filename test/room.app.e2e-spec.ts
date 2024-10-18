@@ -46,10 +46,11 @@ describe('AppController (e2e)', () => {
 			.send({ ...testDto, number: 'not_number' })
 			.expect(400);
 	});
-	/* 	//Тест на дубль номера комнаты
-	// it('/room (POST)', async () => {
-	// 	return await request(app.getHttpServer()).post('/room').send(testDto).expect(500);
-	// }); */
+
+	//Тест на дубль номера комнаты
+	it('/room (POST)', async () => {
+		return await request(app.getHttpServer()).post('/room').send(testDto).expect(500);
+	});
 
 	it('/room/:id (GET) - success', async () => {
 		return request(app.getHttpServer())
@@ -60,26 +61,26 @@ describe('AppController (e2e)', () => {
 			});
 	});
 
-	/* 	// it('/room/:id (GET) - fail', async () => {
-	// 	return request(app.getHttpServer())
-	// 		.get('/room/' + createdId)
-	// 		.expect(200)
-	// 		.then(({ body }: request.Response) => {
-	// 			expect(body.number).toBe(58);
-	// 		});
-	// }); */
-
 	it('/room/:id (DELETE) - success', () => {
 		return request(app.getHttpServer())
 			.delete('/room/' + createdId)
 			.expect(200);
 	});
 
-	// it('/room/:id (DELETE) - fail', () => {
-	// 	return request(app.getHttpServer())
-	// 		.delete('/room/' + 58)
-	// 		.expect(404);
-	// });
+	it('/room/:id (GET) - fail', async () => {
+		return request(app.getHttpServer())
+			.get('/room/' + createdId)
+			.expect(404)
+			.then(({ body }: request.Response) => {
+				expect(body.number).toBeUndefined();
+			});
+	});
+
+	it('/room/:id (DELETE) - fail', () => {
+		return request(app.getHttpServer())
+			.delete('/room/' + createdId)
+			.expect(404);
+	});
 
 	afterAll(() => {
 		disconnect();
