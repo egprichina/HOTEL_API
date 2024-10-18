@@ -1,5 +1,5 @@
 export class ReservUpdateDto {
 	date: Date;
-	room: string;
+	room: number;
 	man: string;
 }

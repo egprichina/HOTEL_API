@@ -8,6 +8,8 @@ import {
 	Patch,
 	HttpException,
 	HttpStatus,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import { RoomCreateDto } from './dto/room-create.dto';
 import { RoomService } from './room.service';
@@ -24,7 +26,7 @@ export class RoomController {
 		if (!room) throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND);
 		return room;
 	}
-
+	@UsePipes(new ValidationPipe())
 	@Post()
 	async create(@Body() dto: RoomCreateDto) {
 		return await this.roomService.create(dto);
