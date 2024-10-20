@@ -8,7 +8,7 @@ import { RESERVED } from './reserv.constants';
 
 @Injectable()
 export class ReservService {
-	constructor(@InjectModel(Reserv.name) private reservModel: Model<ReservDocument>) {}
+	constructor(@InjectModel(Reserv.name) private reservModel: Model<ReservDocument>) { }
 
 	async create(dto: ReservCreateDto): Promise<ReservDocument> {
 		// проверка брони номера на дату
@@ -40,4 +40,17 @@ export class ReservService {
 	async getByRoom(id: string): Promise<ReservDocument[]> {
 		return this.reservModel.find({ room: id }).exec();
 	}
+
+	async getStatistic(gjahr: number, month: number) {
+		const firstDay = new Date(Date.UTC(gjahr, month - 1, 1));
+		const endDay = new Date(Date.UTC(gjahr, month, 0));
+		return this.reservModel.aggregate([{ $match: { date: { $gte: firstDay, $lte: endDay } } },
+	    // Группировка
+		{ $group: { _id: { room: "$room" }, count: { $sum: 1 } } },
+		// Добаляем вычисляемое поле
+		{ $addFields: { room: "$_id.room" } },
+		// Убираем поле
+		{ $unset: "_id" }
+		]).exec();
+	};
 }

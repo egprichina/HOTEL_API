@@ -11,6 +11,9 @@ const testDtoReserv: ReservCreateDto = {
 	man: 'Иванов Иван Иванович',
 };
 
+const login={email: "ivanov@mail.ru", password:"12345"};
+let token = "";
+
 describe('AppController (e2e)', () => {
 	let app: INestApplication;
 	let createdId: string;
@@ -22,6 +25,12 @@ describe('AppController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
+		await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(login)
+			.then(({ body }: request.Response) => {
+				token = body.access_token;
+			});
 	});
 
 	// Тест бронирования
@@ -29,6 +38,7 @@ describe('AppController (e2e)', () => {
 		return await request(app.getHttpServer())
 			.post('/reserv')
 			.send(testDtoReserv)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(201)
 			.then(({ body }: request.Response) => {
 				createdId = body._id;
@@ -37,12 +47,16 @@ describe('AppController (e2e)', () => {
 	});
 
 	it('/reserv (POST) - fail', async () => {
-		return await request(app.getHttpServer()).post('/reserv').send(testDtoReserv).expect(400);
+		return await request(app.getHttpServer())
+		.post('/reserv')
+		.set('Authorization', 'Bearer ' + token)
+		.send(testDtoReserv).expect(400);
 	});
 
 	it('/reserv/:id (DELETE) - success', () => {
 		return request(app.getHttpServer())
 			.delete('/reserv/' + createdId)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(200);
 	});
 

@@ -11,6 +11,9 @@ const testDto: RoomCreateDto = {
 	type: 'Люкс',
 };
 
+const login = { email: "ivanov@mail.ru", password: "12345" };
+let token = "";
+
 describe('AppController (e2e)', () => {
 	let app: INestApplication;
 	let createdId: string;
@@ -22,6 +25,12 @@ describe('AppController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
+		await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(login)
+			.then(({ body }: request.Response) => {
+				token = body.access_token;
+			});
 	});
 
 	// it('/ (GET)', () => {
@@ -33,6 +42,7 @@ describe('AppController (e2e)', () => {
 		return await request(app.getHttpServer())
 			.post('/room')
 			.send(testDto)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(201)
 			.then(({ body }: request.Response) => {
 				createdId = body._id;
@@ -44,17 +54,22 @@ describe('AppController (e2e)', () => {
 		return request(app.getHttpServer())
 			.post('/room')
 			.send({ ...testDto, number: 'not_number' })
+			.set('Authorization', 'Bearer ' + token)
 			.expect(400);
 	});
 
 	//Тест на дубль номера комнаты
 	it('/room (POST)', async () => {
-		return await request(app.getHttpServer()).post('/room').send(testDto).expect(500);
+		return await request(app.getHttpServer()).post('/room')
+		.send(testDto)
+		.set('Authorization', 'Bearer ' + token)
+		.expect(500);
 	});
 
 	it('/room/:id (GET) - success', async () => {
 		return request(app.getHttpServer())
 			.get('/room/' + createdId)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(200)
 			.then(({ body }: request.Response) => {
 				expect(body.number).toBe(testDto.number);
@@ -64,12 +79,14 @@ describe('AppController (e2e)', () => {
 	it('/room/:id (DELETE) - success', () => {
 		return request(app.getHttpServer())
 			.delete('/room/' + createdId)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(200);
 	});
 
 	it('/room/:id (GET) - fail', async () => {
 		return request(app.getHttpServer())
 			.get('/room/' + createdId)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(404)
 			.then(({ body }: request.Response) => {
 				expect(body.number).toBeUndefined();
@@ -79,6 +96,7 @@ describe('AppController (e2e)', () => {
 	it('/room/:id (DELETE) - fail', () => {
 		return request(app.getHttpServer())
 			.delete('/room/' + createdId)
+			.set('Authorization', 'Bearer ' + token)
 			.expect(404);
 	});
 
