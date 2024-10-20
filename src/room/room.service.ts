@@ -28,4 +28,5 @@ export class RoomService {
 	async delete(id: string): Promise<RoomDocument | null> {
 		return this.roomModel.findByIdAndDelete(id).exec();
 	}
+
 }
