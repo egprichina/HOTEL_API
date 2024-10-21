@@ -3,10 +3,13 @@ name: Publish Docker
 on:
   push:
     branches: [4-production]
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@main
       - name: Publish to registy
