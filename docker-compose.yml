@@ -1,24 +1,10 @@
-# Use root/example as user/password credentials
-# version: '3.1'
-
-# services:
-
-#   mongo:
-#     image: mongo
-#     ports:
-#       - "27017:27017"
-#     restart: always
-#     environment:
-#       MONGO_INITDB_ROOT_USERNAME: admin
-#       MONGO_INITDB_ROOT_PASSWORD: admin
-version: '3.9'
+version: '3'
 services:
-  top-api.mongo:
-    image: mongo
-    restart: always
-    container_name: api_hotel.mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-    ports:
-      - 27017:27017
+    api-hotel: 
+      image: api-hotel:latest
+      container_name: api-hotel
+      restart: always
+      ports:
+        - 3000:3000
+      volumes: 
+        - ./.env:/opt/app/.env
