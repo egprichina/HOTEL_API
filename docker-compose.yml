@@ -1,7 +1,7 @@
 version: '3'
 services:
     api-hotel: 
-      image: api-hotel:latest
+      image: ghcr.io/egprichina/hotel_api/api_hotel:develop
       container_name: api-hotel
       restart: always
       ports:

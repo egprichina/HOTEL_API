@@ -2,7 +2,7 @@ name: Publish Docker
 
 on:
   push:
-    branches: [4-production]
+    branches: [main]
     
 jobs:
   build:

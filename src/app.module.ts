@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getMongoConfig } from './config/mongo.config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
 		}),
 		UsersModule,
 		AuthModule,
+		FilesModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
