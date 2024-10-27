@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class RoomCreateDto {
 	@IsNumber()
@@ -7,4 +7,7 @@ export class RoomCreateDto {
 	descrRoom: string;
 	@IsString()
 	type: string;
+	@IsArray()
+	@IsOptional()
+	imageUrl: string[]
 }

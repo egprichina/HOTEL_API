@@ -11,6 +11,8 @@ export class Room {
 	descrRoom: string;
 	@Prop({ required: true })
 	type: string;
+	@Prop()
+	imageUrl: string[]
 }
 
 export const RoomSchema = SchemaFactory.createForClass(Room);
