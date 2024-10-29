@@ -10,6 +10,7 @@ import {
 	HttpStatus,
 	UseGuards,
 	Query,
+	Req,
 } from '@nestjs/common';
 import { RESERVED_NOT_FOUND } from './reserv.constants';
 import { ReservCreateDto } from './dto/reserv-create.dto';
@@ -17,10 +18,15 @@ import { ReservUpdateDto } from './dto/reserv-update.dto';
 import { ReservService } from './reserv.service';
 import { Roles } from '../decorators/role.decorator';
 import { AvtorizGuard } from '../auth/guards/auth.guard';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { AuthDto } from 'src/users/dto/auth.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('reserv')
 export class ReservController {
-	constructor(private readonly reservService: ReservService) {}
+	constructor(private readonly reservService: ReservService,
+		        private readonly telegramService: TelegramService,
+		        private readonly usersService: UsersService) {}
 
 	@Get('byPeriod')
 	async getStatistic(@Query('gjahr') gjahr: number,
@@ -40,8 +46,12 @@ export class ReservController {
 	@Post()
 	@Roles(["admin", "user"])
 	@UseGuards(AvtorizGuard)
-	async create(@Body() dto: ReservCreateDto) {
+	async create(@Body() dto: ReservCreateDto, @Req() request) {
+		const user = await this.usersService.findUser(request.user.email);
+		const message = `Имя: ${user?.name}, Телефон: ${user?.phone}`;
+		await this.telegramService.sendMessage(message);
 		return await this.reservService.create(dto);
+
 	}
 
 	@Get()
@@ -50,6 +60,8 @@ export class ReservController {
 	async getAll() {
 		return await this.reservService.getAll();
 	}
+
+
 
 	@Delete(':id')
 	@Roles(["admin"])
